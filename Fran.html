@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flores Amarillas 🌻</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      color: #4a3b2a;
+      overflow-x: hidden;
+      background: #fdf6e3;
+    }
+
+    /* ---------- FONDO CON IMAGEN ---------- */
+    .fondo {
+      position: fixed;
+      inset: 0;
+      background-image: url('https://files.catbox.moe/t5g04e.jpeg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      z-index: 0;
+    }
+
+    /* Capa suave encima para que el texto se lea bien */
+    .fondo::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 249, 224, 0.55);
+      backdrop-filter: blur(1px);
+    }
+
+    /* ---------- PANTALLA DE INICIO ---------- */
+    #inicio {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,244,194,0.95) 0%, rgba(255,213,79,0.95) 50%, rgba(255,179,0,0.95) 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+      z-index: 10;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+
+    #inicio.oculto {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    #inicio h1 {
+      font-size: 2.5rem;
+      color: #7a4f00;
+      margin-bottom: 1rem;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+
+    #inicio p {
+      font-size: 1.1rem;
+      color: #8a6500;
+      margin-bottom: 2.5rem;
+      max-width: 400px;
+      line-height: 1.5;
+    }
+
+    .btn-ingresar {
+      background: #7a4f00;
+      color: #fff8e1;
+      border: none;
+      padding: 1rem 3rem;
+      font-size: 1.15rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+      box-shadow: 0 6px 20px rgba(122, 79, 0, 0.25);
+    }
+
+    .btn-ingresar:hover {
+      background: #5c3b00;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(122, 79, 0, 0.35);
+    }
+
+    .btn-ingresar:active {
+      transform: translateY(0);
+    }
+
+    /* ---------- CONTENIDO PRINCIPAL ---------- */
+    #contenido {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+      opacity: 0;
+      transition: opacity 1s ease 0.3s;
+    }
+
+    #contenido.visible {
+      opacity: 1;
+    }
+
+    .tarjeta {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(6px);
+      padding: 3rem 2.5rem;
+      border-radius: 4px;
+      border: 1px solid #f0d98a;
+      box-shadow: 0 15px 40px rgba(120, 90, 0, 0.25);
+      max-width: 640px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+    }
+
+    .tarjeta::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(90deg, #ffd54f, #ffb300, #ffd54f);
+    }
+
+    .flor {
+      font-size: 3.5rem;
+      line-height: 1;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      color: #7a4f00;
+      margin-bottom: 1.5rem;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+
+    .foto {
+      width: 100%;
+      max-width: 380px;
+      margin: 0 auto 1.8rem;
+      display: block;
+      border: 4px solid #ffd54f;
+      border-radius: 4px;
+      box-shadow: 0 10px 25px rgba(180, 140, 20, 0.25);
+      object-fit: cover;
+    }
+
+    p {
+      font-size: 1.25rem;
+      color: #5d4037;
+      margin-bottom: 1.2rem;
+      line-height: 1.7;
+      font-weight: 400;
+    }
+
+    .firma {
+      font-size: 1.2rem;
+      color: #a08457;
+      font-style: italic;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #f0d98a;
+    }
+
+    .decoracion {
+      margin-top: 1.2rem;
+      font-size: 1.6rem;
+      opacity: 0.85;
+      letter-spacing: 14px;
+    }
+
+    /* ---------- PARTÍCULAS DE FLORES CAYENDO ---------- */
+    #particulas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 5;
+    }
+
+    .petalo {
+      position: absolute;
+      top: -60px;
+      font-size: 1.6rem;
+      opacity: 0.9;
+      animation-name: caer;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+      filter: drop-shadow(0 2px 4px rgba(180, 140, 20, 0.3));
+      user-select: none;
+    }
+
+    @keyframes caer {
+      0% {
+        transform: translateY(-60px) rotate(0deg);
+      }
+      100% {
+        transform: translateY(105vh) rotate(360deg);
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      #inicio h1 { font-size: 1.9rem; }
+      .tarjeta { padding: 2rem 1.5rem; }
+      h1 { font-size: 1.7rem; }
+      p { font-size: 1.1rem; }
+      .flor { font-size: 2.8rem; }
+      .foto { max-width: 100%; }
+      .petalo { font-size: 1.3rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fondo con imagen -->
+  <div class="fondo"></div>
+
+  <!-- Partículas de flores cayendo -->
+  <div id="particulas"></div>
+
+  <!-- PANTALLA DE INICIO -->
+  <div id="inicio">
+    <h1>💛 Un detalle para ti 💛</h1>
+    <p>Antes de ver tu sorpresa, presiona el botón.</p>
+    <button class="btn-ingresar" onclick="ingresar()">INGRESAR</button>
+  </div>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <div id="contenido">
+    <div class="tarjeta">
+      <div class="flor">🌻🌼🌻</div>
+
+      <h1>Aquí están tus flores amarillas</h1>
+
+      <img
+        src="https://files.catbox.moe/taxbq5.png"
+        alt="Nosotros dos 💛"
+        class="foto"
+      >
+
+      <p>
+        Para mi mejor amiga,<br>
+        la persona que siempre está cuando más la necesito,<br>
+        la que me saca una sonrisa sin importar el día,<br>
+        y con quien cada momento se vuelve un recuerdo bonito.
+      </p>
+
+      <p>
+        Gracias por ser mi cómplice, mi apoyo<br>
+        y esa amiga que vale más que mil flores. 💛
+      </p>
+
+      <div class="decoracion">🌼 🌻 🌼</div>
+
+      <div class="firma">Con cariño, Santi 🌻</div>
+    </div>
+  </div>
+
+  <script>
+    function ingresar() {
+      const inicio = document.getElementById('inicio');
+      const contenido = document.getElementById('contenido');
+      inicio.classList.add('oculto');
+      contenido.classList.add('visible');
+    }
+
+    /* ---------- GENERADOR DE PARTÍCULAS ---------- */
+    const contenedor = document.getElementById('particulas');
+    const flores = ['🌻', '🌼', '🌹', '💛', '🌻', '🌼']; // mezcla de flores amarillas y rosas
+
+    function crearPetalo() {
+      const p = document.createElement('div');
+      p.classList.add('petalo');
+      p.textContent = flores[Math.floor(Math.random() * flores.length)];
+
+      // Posición horizontal aleatoria
+      p.style.left = Math.random() * 100 + 'vw';
+
+      // Tamaño aleatorio
+      const tam = 1 + Math.random() * 1.5;
+      p.style.fontSize = tam + 'rem';
+
+      // Duración aleatoria (más lento = más realista)
+      const duracion = 6 + Math.random() * 8;
+      p.style.animationDuration = duracion + 's';
+
+      // Retraso pequeño aleatorio
+      p.style.animationDelay = Math.random() * 4 + 's';
+
+      // Rotación inicial
+      p.style.transform = `rotate(${Math.random() * 360}deg)`;
+
+      contenedor.appendChild(p);
+
+      // Eliminar cuando termine para no saturar
+      setTimeout(() => p.remove(), (duracion + 4) * 1000);
+    }
+
+    // Crear partículas constantemente
+    setInterval(crearPetalo, 350);
+
+    // Crear unas cuantas al inicio para que no se vea vacío
+    for (let i = 0; i < 20; i++) {
+      setTimeout(crearPetalo, i * 150);
+    }
+  </script>
+
+</body>
+</html>
